@@ -55,7 +55,9 @@ export default function Home() {
 
     recognition.onend = () => {
       console.log('[recognizer] end');
-      setIsListening(false);
+      if (isListening) {
+        setIsListening(false);
+      }
     };
 
     recognizerRef.current = recognition;
