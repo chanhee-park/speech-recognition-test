@@ -53,6 +53,11 @@ export default function Home() {
       }, 5000);
     };
 
+    recognition.onend = () => {
+      console.log('[recognizer] end');
+      setIsListening(false);
+    };
+
     recognizerRef.current = recognition;
     return recognition;
   }
