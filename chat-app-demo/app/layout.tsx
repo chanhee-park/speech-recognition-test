@@ -24,8 +24,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <main className="grid grid-rows-[auto,1fr,auto] gap-4 p-4">{children}</main>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased"`}>
+        <main className="grid grid-rows-[auto,1fr,auto] gap-4 p-4 overflow-auto">{children}</main>
+
+        {/* fixed on the bottom */}
+        <footer className="text-center text-sm text-gray-500 py-4">
+          View Source from GitHub Repository{' '}
+          <a
+            href="https://github.com/chanhee-park/speech-recognition-test"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 hover:underline"
+          >
+            chanhee-park/speech-recognition-test
+          </a>
+        </footer>
       </body>
     </html>
   );

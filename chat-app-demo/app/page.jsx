@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 
-export default function ChatPage() {
+export default function Home() {
   const [messages, setMessages] = useState([]);
   const [isListening, setIsListening] = useState(false);
   const recognizerRef = useRef(null);
