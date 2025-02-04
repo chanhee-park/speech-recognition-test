@@ -82,7 +82,7 @@ export default function Home() {
       }
 
       console.log('[starter] final:', transcript);
-      if (!isListening && transcript.includes('hello') && transcript.includes('brain')) {
+      if (!isListening && transcript.includes('what') && transcript.includes('up')) {
         setIsListening(true);
       }
     };
@@ -124,7 +124,8 @@ export default function Home() {
     <>
       <h1 className="text-4xl font-bold">Speech Recognition Chat</h1>
       <p className="text-lg">
-        This is a demo app that implements voice recognition chat using SpeechRecognition (Web Speech API).
+        This is a demo app that implements voice recognition chat using SpeechRecognition (Web Speech API). You can
+        start listening by saying "What's up".
       </p>
 
       <div className="flex gap-4 w-full">
