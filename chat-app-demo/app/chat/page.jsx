@@ -8,6 +8,7 @@ export default function ChatPage() {
   const [isListening, setIsListening] = useState(false);
 
   const recognizer = initSpeechRecognition();
+  const starter = initStater();
 
   function handleMicClick() {
     setIsListening((prev) => !prev);
@@ -48,6 +49,35 @@ export default function ChatPage() {
     return recognition;
   }
 
+  function initStater() {
+    const stater = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    stater.continuous = true;
+    stater.interimResults = true;
+    stater.lang = 'en-US';
+
+    console.log(window.SpeechGrammarList);
+    if (window.SpeechGrammarList) {
+      const grammar = '#JSGF V1.0; grammar greeting; public <greeting> = hello brain;';
+      const grammarList = new window.SpeechGrammarList();
+      grammarList.addFromString(grammar);
+      stater.grammars = grammarList;
+    }
+
+    stater.onresult = (event) => {
+      const result = event.results[event.results.length - 1];
+      const transcript = result[0].transcript;
+      console.log('[starter] result', event, transcript);
+
+      if (result.isFinal && isListening === false) {
+        if (transcript.includes('hello') && transcript.includes('brain')) {
+          setIsListening(true);
+        }
+      }
+    };
+
+    return stater;
+  }
+
   function addTextToInput(text) {
     setInput((prev) => prev + ' ' + text + '.');
   }
@@ -63,6 +93,18 @@ export default function ChatPage() {
       recognizer.stop();
     };
   }, [isListening]);
+
+  useEffect(() => {
+    if (starter !== undefined) {
+      starter.start();
+    }
+
+    return () => {
+      if (starter !== undefined) {
+        starter.stop();
+      }
+    };
+  }, []);
 
   return (
     <>
