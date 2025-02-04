@@ -1,11 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function ChatPage() {
   const [input, setInput] = useState('');
-  const [messages, setMessages] = useState<string[]>([]);
+  const [messages, setMessages] = useState([]);
   const [isListening, setIsListening] = useState(false);
+
+  const recognizer = initSpeechRecognition();
 
   function handleMicClick() {
     setIsListening((prev) => !prev);
@@ -19,6 +21,48 @@ export default function ChatPage() {
     setMessages((prev) => [...prev, input]);
     setInput('');
   }
+
+  function initSpeechRecognition() {
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = 'ko-KR';
+    let currentSpeechText = '';
+    let onResultTimeout = null;
+
+    recognition.onresult = (event) => {
+      console.log('[recognizer] result', event);
+      const result = event.results[event.results.length - 1];
+      const transcript = result[0].transcript;
+      currentSpeechText = transcript;
+
+      if (result.isFinal) {
+        clearTimeout(onResultTimeout);
+        onResultTimeout = setTimeout(() => {
+          addTextToInput(currentSpeechText);
+          currentSpeechText = '';
+        }, 100);
+      }
+    };
+
+    return recognition;
+  }
+
+  function addTextToInput(text) {
+    setInput((prev) => prev + ' ' + text + '.');
+  }
+
+  useEffect(() => {
+    if (isListening) {
+      recognizer.start();
+    } else {
+      recognizer.stop();
+    }
+
+    return () => {
+      recognizer.stop();
+    };
+  }, [isListening]);
 
   return (
     <>
