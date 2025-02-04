@@ -1,109 +1,116 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export default function ChatPage() {
-  const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
   const [isListening, setIsListening] = useState(false);
-
-  const recognizer = initSpeechRecognition();
-  const starter = initStater();
+  const recognizerRef = useRef(null);
+  const starterRef = useRef(null);
+  const sendTimeout = useRef(null);
 
   function handleMicClick() {
     setIsListening((prev) => !prev);
   }
 
-  function handleSendClick() {
-    if (input.trim() === '') {
+  function sendMessage() {
+    const input = getInputText();
+    console.log('[chat] send message:', input);
+    if (!input || !input.trim()) {
       return;
     }
-
     setMessages((prev) => [...prev, input]);
-    setInput('');
+    setInputText('');
   }
 
   function initSpeechRecognition() {
+    if (recognizerRef.current) {
+      return recognizerRef.current;
+    }
+
     const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
     recognition.continuous = true;
     recognition.interimResults = true;
     recognition.lang = 'ko-KR';
-    let currentSpeechText = '';
-    let onResultTimeout = null;
 
     recognition.onresult = (event) => {
-      console.log('[recognizer] result', event);
       const result = event.results[event.results.length - 1];
       const transcript = result[0].transcript;
-      currentSpeechText = transcript;
 
-      if (result.isFinal) {
-        clearTimeout(onResultTimeout);
-        onResultTimeout = setTimeout(() => {
-          addTextToInput(currentSpeechText);
-          currentSpeechText = '';
-        }, 100);
+      if (!result.isFinal) {
+        console.log('[recognizer] interim:', transcript);
+        return;
       }
+
+      console.log('[recognizer] final:', transcript);
+      addInputText(transcript);
+
+      clearTimeout(sendTimeout.current);
+      sendTimeout.current = setTimeout(() => {
+        console.log('[recognizer] timeout -> send message');
+        setIsListening(false);
+        setTimeout(sendMessage, 500);
+      }, 5000);
     };
 
+    recognizerRef.current = recognition;
     return recognition;
   }
 
-  function initStater() {
+  function initStarter() {
+    if (starterRef.current) return starterRef.current;
+
     const stater = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
     stater.continuous = true;
     stater.interimResults = true;
     stater.lang = 'en-US';
 
-    console.log(window.SpeechGrammarList);
-    if (window.SpeechGrammarList) {
-      const grammar = '#JSGF V1.0; grammar greeting; public <greeting> = hello brain;';
-      const grammarList = new window.SpeechGrammarList();
-      grammarList.addFromString(grammar);
-      stater.grammars = grammarList;
-    }
-
     stater.onresult = (event) => {
       const result = event.results[event.results.length - 1];
-      const transcript = result[0].transcript;
-      console.log('[starter] result', event, transcript);
+      const transcript = result[0].transcript.toLowerCase();
 
-      if (result.isFinal && isListening === false) {
-        if (transcript.includes('hello') && transcript.includes('brain')) {
-          setIsListening(true);
-        }
+      if (!result.isFinal) {
+        console.log('[starter] interim:', transcript);
+        return;
+      }
+
+      console.log('[starter] final:', transcript);
+      if (!isListening && transcript.includes('hello') && transcript.includes('brain')) {
+        setIsListening(true);
       }
     };
 
+    starterRef.current = stater;
     return stater;
   }
 
-  function addTextToInput(text) {
-    setInput((prev) => prev + ' ' + text + '.');
+  function getInputText() {
+    return document.getElementById('chat-input').value;
+  }
+
+  function setInputText(text) {
+    document.getElementById('chat-input').value = text;
+  }
+
+  function addInputText(text) {
+    const dom = document.getElementById('chat-input');
+    const current = dom.value;
+    dom.value = current + ' ' + text + '.';
   }
 
   useEffect(() => {
-    if (isListening) {
-      recognizer.start();
-    } else {
-      recognizer.stop();
-    }
+    const recognizer = initSpeechRecognition();
+    if (isListening) recognizer.start();
+    else recognizer.stop();
 
-    return () => {
-      recognizer.stop();
-    };
+    return () => recognizer.stop();
   }, [isListening]);
 
   useEffect(() => {
-    if (starter !== undefined) {
-      starter.start();
-    }
+    const starter = initStarter();
+    starter.start();
 
-    return () => {
-      if (starter !== undefined) {
-        starter.stop();
-      }
-    };
+    return () => starter.stop();
   }, []);
 
   return (
@@ -117,15 +124,14 @@ export default function ChatPage() {
         <textarea
           className="w-full h-36 p-4 text-lg border border-gray-300 rounded-md"
           placeholder="Type your message here..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
+          id="chat-input"
         />
         <div className="flex gap-2">
           {isListening && <div className="w-8 h-8 bg-red-500 rounded-full animate-ping" />}
           <button className="px-6 py-2 text-lg font-bold text-white bg-purple-700 rounded-md" onClick={handleMicClick}>
             {isListening ? 'Stop' : 'Start'} Listening
           </button>
-          <button className="px-6 py-2 text-lg font-bold text-white bg-purple-700 rounded-md" onClick={handleSendClick}>
+          <button className="px-6 py-2 text-lg font-bold text-white bg-purple-700 rounded-md" onClick={sendMessage}>
             Send
           </button>
         </div>
