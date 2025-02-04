@@ -121,6 +121,7 @@ export default function ChatPage() {
           onChange={(e) => setInput(e.target.value)}
         />
         <div className="flex gap-2">
+          {isListening && <div className="w-8 h-8 bg-red-500 rounded-full animate-ping" />}
           <button className="px-6 py-2 text-lg font-bold text-white bg-purple-700 rounded-md" onClick={handleMicClick}>
             {isListening ? 'Stop' : 'Start'} Listening
           </button>
