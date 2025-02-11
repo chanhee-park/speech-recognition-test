@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Text-to-Speech Simulator - Test Web Speech API</title>
+
+    <!-- Meta Tags -->
+    <meta name="title" content="Text-to-Speech Simulator - Test Web Speech API" />
+    <meta
+      name="description"
+      content="Test and experiment with Web Speech API functionality. A comprehensive tool for frontend developers to simulate text-to-speech with various configurations."
+    />
+
+    <!-- Favicon -->
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
+
+    <!-- Cache Control -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+
+    <!-- Preconnect to CDN -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="styles.css" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Speech Recognition Simulator",
+        "description": "A comprehensive tool for testing Web Speech API functionality and speech recognition features",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Any",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "featureList": [
+          "Multiple language support",
+          "Configurable recognition settings",
+          "Real-time speech-to-text conversion",
+          "Browser compatibility testing"
+        ]
+      }
+    </script>
+  </head>
+  <body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+      <h1 class="text-3xl font-bold mb-8 text-center">Text-to-Speech Simulator</h1>
+
+      <div class="bg-white rounded-lg shadow p-6 mb-8">
+        <h2 class="text-xl font-semibold mb-4">Configuration</h2>
+
+        <label class="block mb-2">Text to Speak</label>
+        <textarea id="textInput" class="w-full p-2 border rounded" rows="3" placeholder="Enter text here..."></textarea>
+
+        <label class="block mt-4 mb-2">Select Voice</label>
+        <select id="voiceSelect" class="w-full p-2 border rounded"></select>
+
+        <label class="block mt-4 mb-2">Speech Rate (0.5~2) </label>
+        <span id="rate-value" class="text-sm text-gray-500">1</span>
+        <input type="range" id="rate" min="0.5" max="2" value="1" step="0.05" class="w-full" />
+
+        <label class="block mt-4 mb-2">Pitch</label>
+        <span id="pitch-value" class="text-sm text-gray-500">1</span>
+        <input type="range" id="pitch" min="0" max="2" value="1" step="0.05" class="w-full" />
+
+        <div class="mt-6 flex space-x-4">
+          <button id="speakButton" class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600">Speak</button>
+          <button id="stopButton" class="bg-red-500 text-white px-6 py-2 rounded hover:bg-red-600">Stop</button>
+        </div>
+      </div>
+
+      <!-- Browser Info Section -->
+      <div class="bg-white rounded-lg shadow p-6 mb-8">
+        <h2 class="text-xl font-semibold mb-4">Browser Information</h2>
+
+        <p class="text-sm text-gray-500"><strong>Browser:</strong> <span id="browserInfo"></span></p>
+        <p class="text-sm text-gray-500"><strong>Speech Synthesis Support:</strong> <span id="speechSupport"></span></p>
+      </div>
+
+      <!-- About Web Speech API(speechSynthesis) Section -->
+      <div class="bg-white rounded-lg shadow p-6 mb-8">
+        <h2 class="text-xl font-semibold mb-4">About Speech Synthesis</h2>
+
+        <p class="mb-4">
+          The <strong>Speech Synthesis</strong> interface of the Web Speech API is responsible for speech synthesis
+          (also known as text-to-speech or TTS). It allows you to convert text into spoken words.
+        </p>
+
+        <p class="mb-4">
+          The <strong>SpeechSynthesis</strong> interface of the Web Speech API is the controller interface for the
+          speech service; this can be used to retrieve information about the synthesis voices available on the device,
+          start and pause speech, and other commands besides.
+
+          <a
+            href="https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis"
+            target="_blank"
+            class="text-blue-500 hover:underline"
+            >Learn more about Speech Synthesis</a
+          >
+        </p>
+
+        <p class="mb-4">
+          You can access the source code for this project on GitHub:
+          <a
+            href="https://github.com/chanhee-park/speech-recognition-test"
+            target="_blank"
+            class="text-blue-500 hover:underline"
+            >speech-recognition-test.</a
+          >
+        </p>
+      </div>
+    </div>
+
+    <script src="scripts/tts-script.js"></script>
+
+    <!-- update browser info -->
+    <script>
+      document.getElementById('browserInfo').textContent = navigator.userAgent;
+      document.getElementById('speechSupport').textContent = window.speechSynthesis ? 'Yes' : 'No';
+    </script>
+  </body>
+</html>
