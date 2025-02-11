@@ -31,7 +31,6 @@ if (recognition) {
   const continuousCheckbox = document.getElementById('continuous');
   const maxAlternativesInput = document.getElementById('maxAlternatives');
   const timeoutSelect = document.getElementById('timeout');
-  const audioContextSelect = document.getElementById('audioContext');
   const autoRestartCheckbox = document.getElementById('autoRestart');
 
   // Apply configuration
@@ -58,14 +57,7 @@ if (recognition) {
   }
 
   // Event listeners for config changes
-  const configElements = [
-    languageSelect,
-    continuousCheckbox,
-    maxAlternativesInput,
-    timeoutSelect,
-    audioContextSelect,
-    autoRestartCheckbox,
-  ];
+  const configElements = [languageSelect, continuousCheckbox, maxAlternativesInput, timeoutSelect, autoRestartCheckbox];
   configElements.forEach((element) => {
     element.addEventListener('change', applyConfig);
   });
